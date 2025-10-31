@@ -34,10 +34,17 @@ export default function User() {
     };
     console.log(user);
     axios
-      .post("https://fitness-tracker-mern.herokuapp.com/users/add/", user)
-      .then((res) => console.log(res.data));
+      .post("http://localhost:5000/users/add/", user)
+      .then((res) => {
+        console.log(res.data);
+        setUsername(""); // <-- FIX: Moved this line inside the .then() block
+      })
+      .catch((err) => {
+        // <-- FIX: Added a .catch() block to log any errors
+        console.error("Error adding user:", err);
+      });
 
-    setUsername("");
+    // setUsername(""); // <-- FIX: Removed this line from here
   };
 
   const useStyles = makeStyles((theme) => ({

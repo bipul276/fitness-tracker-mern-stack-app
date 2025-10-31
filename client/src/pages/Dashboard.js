@@ -86,7 +86,8 @@ function Dashboard() {
 
   React.useEffect(() => {
     axios
-      .get("https://fitness-tracker-mern.herokuapp.com/exercises")
+      // <-- FIX 1: Corrected this URL
+      .get("http://localhost:5000/exercises")
       .then((response) => {
         setExercises(response.data);
       })
@@ -97,12 +98,16 @@ function Dashboard() {
 
   const deleteExercise = (id) => {
     axios
-      .delete("https://fitness-tracker-mern.herokuapp.com/exercises/" + id)
+      // <-- FIX 2: Corrected this URL
+      .delete("http://localhost:5000/exercises/" + id)
       .then((response) => {
         console.log(response.data);
+        const del = exercises.filter((el) => el._id !== id);
+        setExercises(del);
+      })
+      .catch((err) => {
+        console.error("Error deleting exercise:", err);
       });
-    const del = exercises.filter((el) => el._id !== id);
-    setExercises(del);
   };
 
   const classes = useStyles();

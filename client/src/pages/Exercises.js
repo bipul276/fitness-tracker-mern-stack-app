@@ -9,17 +9,24 @@ import Paper from "@material-ui/core/Paper";
 import axios from "axios";
 
 import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
+// <-- FIX: Helper function to get today's date as "YYYY-MM-DD"
+const getTodayDate = () => {
+  return new Date().toISOString().substring(0, 10);
+};
 
 export default function Exercises() {
   const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState(0);
-  const [date, setDate] = useState(new Date());
+  // <-- FIX: Initialize state with the correctly formatted date string
+  const [date, setDate] = useState(getTodayDate());
   const [users, setUsers] = useState([]);
 
   React.useEffect(() => {
     axios
-      .get("https://fitness-tracker-mern.herokuapp.com/users")
+      .get("http://localhost:5000/users")
       .then((response) => {
         if (response.data.length > 0) {
           setUsers(response.data.map((user) => user.username));
@@ -44,7 +51,7 @@ export default function Exercises() {
   };
 
   const onChangeDate = (e) => {
-    setDate(e.target.value);
+    setDate(e.target.value); // This is already correct
   };
 
   const onSubmit = (e) => {
@@ -59,15 +66,21 @@ export default function Exercises() {
 
     axios
       .post(
-        "https://fitness-tracker-mern.herokuapp.com/exercises/add/",
+        "http://localhost:5000/exercises/add/",
         exercise
       )
-      .then((res) => console.log(res.data));
-
-    setUsername("");
-    setDescription("");
-    setDuration("");
-    setDate("");
+      .then((res) => {
+        console.log(res.data);
+        // Reset the form
+        setUsername("");
+        setDescription("");
+        setDuration("");
+        // <-- FIX: Reset date back to today, not an empty string
+        setDate(getTodayDate());
+      })
+      .catch((err) => {
+        console.error("Error adding exercise:", err);
+      });
   };
   function Copyright() {
     return (
@@ -139,9 +152,9 @@ export default function Exercises() {
                 >
                   {users.map((user) => {
                     return (
-                      <option key={user} value={user}>
+                      <MenuItem key={user} value={user}>
                         {user}
-                      </option>
+                      </MenuItem>
                     );
                   })}
                 </Select>
@@ -177,12 +190,13 @@ export default function Exercises() {
                   id="date"
                   label="Date"
                   type="date"
-                  defaultValue="2017-05-24"
+                  // <-- FIX: Removed the "defaultValue" prop
+                  // defaultValue="2017-05-24"
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  value={date}
+                  value={date} // This is now a valid "YYYY-MM-DD" string
                   onChange={onChangeDate}
                 />
               </Grid>
